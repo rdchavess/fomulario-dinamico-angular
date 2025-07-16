@@ -1,0 +1,79 @@
+<form [formGroup]="form" (ngSubmit)="enviar()" class="max-w-md mx-auto p-4 border rounded shadow">
+
+  <h2 class="text-xl font-bold mb-4">{{ config.descricao }}</h2>
+
+  <div *ngFor="let campo of config.campos" class="mb-4">
+    <ng-container *ngIf="campo.tipoCampo === 'checkbox'; else elseTemplate">
+      <input type="checkbox" class="form-check-input" [formControlName]="campo.nome" [id]="campo.nome" />
+      <label class="form-check-label" [for]="campo.nome">{{ campo.label }}</label>
+    </ng-container>
+    <ng-template #elseTemplate>
+      <label [for]="campo.nome" class="block font-medium mb-1">
+        {{ campo.label }}
+        <span *ngIf="campo.obrigatorio" class="text-red-500">*</span>
+      </label>
+
+      <div>
+        <ng-container [ngSwitch]="campo.tipoCampo">
+
+          <ng-container *ngSwitchCase="'radio'">
+            <div *ngFor="let opcao of campo.opcoes" class="form-check form-check-inline">
+              <input type="radio" class="form-check-input" [formControlName]="campo.nome" [value]="opcao.valor"
+                [id]="campo.nome + '-' + opcao.valor" />
+              <label class="form-check-label" [for]="campo.nome + '-' + opcao.valor">
+                {{ opcao.rotulo }}
+              </label>
+            </div>
+          </ng-container>
+
+          <input *ngSwitchCase="'input'" type="text" class="w-full p-2 border rounded" [id]="campo.nome"
+            [placeholder]="campo.placeholder" [formControlName]="campo.nome" />
+
+          <textarea *ngSwitchCase="'textarea'" class="w-full p-2 border rounded" [id]="campo.nome"
+            [placeholder]="campo.placeholder" [formControlName]="campo.nome"></textarea>
+
+          <select *ngSwitchCase="'select'" class="w-full p-2 border rounded" [id]="campo.nome"
+            [formControlName]="campo.nome">
+            <option value="">-- {{ campo.placeholder || 'Selecione' }} --</option>
+            <option *ngFor="let op of campo.opcoes" [value]="op.valor">{{ op.rotulo }}</option>
+          </select>
+
+          <input *ngSwitchCase="'date'" type="text" class="form-control" bsDatepicker [formControlName]="campo.nome"
+            [placeholder]="campo.placeholder || campo.label" [id]="campo.nome">
+
+        </ng-container>
+      </div>
+
+      <div *ngIf="form.get(campo.nome)?.invalid && form.get(campo.nome)?.touched" class="text-danger small mb-2">
+        <div *ngIf="form.get(campo.nome)?.errors?.['required']">
+          {{ campo.label }} é obrigatório.
+        </div>
+        <div *ngIf="form.get(campo.nome)?.errors?.['minlength']">
+          {{ getValidacaoMensagemErro(campo, 'minlength') }}
+        </div>
+        <div *ngIf="form.get(campo.nome)?.errors?.['maxlength']">
+          {{ getValidacaoMensagemErro(campo, 'maxlength') }}
+        </div>
+        <div *ngIf="form.get(campo.nome)?.errors?.['pattern']">
+          {{ getValidacaoMensagemErro(campo, 'pattern') }}
+        </div>
+        <div *ngIf="form.get(campo.nome)?.errors?.['minDate']">
+          {{ getValidacaoMensagemErro(campo, 'minDate') }}
+        </div>
+        <div *ngIf="form.get(campo.nome)?.errors?.['maxDate']">
+          {{ getValidacaoMensagemErro(campo, 'maxDate') }}
+        </div>
+      </div>
+    </ng-template>
+  </div>
+
+  <!-- Validação entre datas -->
+  <div *ngIf="form.errors?.['dataInvalida'] && form.touched" class="text-danger small mb-2">
+    A data de início não pode ser posterior à data de fim.
+  </div>
+
+  <button class="btn btn-primary" type="submit" [disabled]="form.invalid">
+    Enviar
+  </button>
+
+</form>
