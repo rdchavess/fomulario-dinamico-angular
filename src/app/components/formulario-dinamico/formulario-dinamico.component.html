@@ -3,17 +3,17 @@
   <h2 class="text-xl font-bold mb-4">{{ config.descricao }}</h2>
 
   <div *ngFor="let campo of config.campos" class="mb-4">
-    <ng-container *ngIf="campo.tipoCampo === 'checkbox'; else elseTemplate">
-      <input type="checkbox" class="form-check-input" [formControlName]="campo.nome" [id]="campo.nome" />
-      <label class="form-check-label" [for]="campo.nome">{{ campo.label }}</label>
-    </ng-container>
-    <ng-template #elseTemplate>
-      <label [for]="campo.nome" class="block font-medium mb-1">
-        {{ campo.label }}
-        <span *ngIf="campo.obrigatorio" class="text-red-500">*</span>
-      </label>
+    <div>
+      <ng-container *ngIf="campo.tipoCampo === 'checkbox'; else elseTemplate">
+        <input type="checkbox" class="form-check-input" [formControlName]="campo.nome" [id]="campo.nome" />
+        <label class="form-check-label" [for]="campo.nome">{{ campo.label }}</label>
+      </ng-container>
+      <ng-template #elseTemplate>
+        <label [for]="campo.nome" style="margin-right: 5px;" class="block font-medium mb-1">
+          {{ campo.label }}
+          <span *ngIf="campo.obrigatorio" class="text-danger">*</span>
+        </label>
 
-      <div>
         <ng-container [ngSwitch]="campo.tipoCampo">
 
           <ng-container *ngSwitchCase="'radio'">
@@ -42,8 +42,7 @@
             [placeholder]="campo.placeholder || campo.label" [id]="campo.nome">
 
         </ng-container>
-      </div>
-
+      </ng-template>
       <div *ngIf="form.get(campo.nome)?.invalid && form.get(campo.nome)?.touched" class="text-danger small mb-2">
         <div *ngIf="form.get(campo.nome)?.errors?.['required']">
           {{ campo.label }} é obrigatório.
@@ -64,7 +63,7 @@
           {{ getValidacaoMensagemErro(campo, 'maxDate') }}
         </div>
       </div>
-    </ng-template>
+    </div>
   </div>
 
   <!-- Validação entre datas -->

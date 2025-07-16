@@ -38,7 +38,11 @@ export class FormularioDinamicoComponent implements OnInit {
       const validators = [];
 
       if (campo.obrigatorio) {
-        validators.push(Validators.required);
+        if (campo.tipoCampo === 'checkbox') {
+          validators.push(Validators.requiredTrue);
+        } else{
+          validators.push(Validators.required);
+        }
       }
 
       if (campo.urlOpcoes) {
